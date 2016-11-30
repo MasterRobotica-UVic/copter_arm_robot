@@ -1,0 +1,67 @@
+<?xml version="1.0" ?>
+<launch>
+
+	<!-- Main LUI (launch user interface) -->
+	<arg name="robot_sim" default="true"/>
+
+	<!-- Gazebo params -->
+	<arg name="paused" default="false"/>
+	<arg name="use_sim_time" default="true"/>
+	<arg name="gui" default="true"/>
+	<arg name="headless" default="false"/>
+
+	<!-- remap the command, if not at the beginning, it does not work -->
+	<remap from="/control_effort" to="/copter_arm/motor_controller/command"  />
+
+	<!-- Load the URDF to the parameter server -->
+	<param name="robot_description" command="$(find xacro)/xacro --inorder '$(find copter_arm_robot)/urdf/copter_arm.urdf'" />
+
+	<!-- Merge joint states and publish as /joint_states -->
+	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+		<param name="use_gui" value="false"/>
+		<rosparam param="source_list">[copter_arm/joint_states]</rosparam>
+	</node>
+
+	<!-- Convert joint states to /tf tranforms -->
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+	<!-- Load all available ros controllers -->
+	<rosparam file="$(find copter_arm_robot)/config/controllers.yaml" command="load"/>
+	<node ns="copter_arm" name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="state_controller motor_controller free_controller"/>
+
+	<!-- Load the simulation environment -->
+	<group if="$(arg robot_sim)">
+		<include file="$(find gazebo_ros)/launch/empty_world.launch">
+			<arg name="world_name" value="$(find copter_arm_robot)/world/copter_arm.world"/>
+			<arg name="debug" value="false" />
+			<arg name="gui" value="$(arg gui)" />
+			<arg name="paused" value="$(arg paused)"/>
+			<arg name="use_sim_time" value="$(arg use_sim_time)"/>
+			<arg name="headless" value="$(arg headless)"/>
+		</include>
+		<node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"  args="-urdf -model copter_arm -param robot_description"/>
+	</group>
+
+	<!-- Load the generic PID controller -->
+	<node name="copter_arm_angle_controller" pkg="pid" type="controller" >
+		<param name="Kp" value="0.0" /> <!-- 100.0 -->
+		<param name="Ki" value="0.0" /> <!-- 3.3 -->
+		<param name="Kd" value="0.0" /> <!-- 2.0 -->
+		<param name="upper_limit" value="9999999" />
+		<param name="lower_limit" value="-9999999" />
+		<param name="windup_limit" value="500" />
+		<param name="diagnostic_period" value="0.25" />
+		<param name="max_loop_frequency" value="100.0" />
+		<param name="min_loop_frequency" value="100.0" />
+	</node>
+
+	<!-- and transfrom the state -->
+	<node name="state_transformer" pkg="topic_tools" type="transform" args="/copter_arm/joint_states /state std_msgs/Float64 'm.position[0]'" output="screen" respawn="true" />
+
+	<!-- rqt configuration -->
+	<node name="plots" pkg="rqt_gui" type="rqt_gui" respawn="true" args="--perspective-file $(find copter_arm_robot)/config/pid.perspective" output="screen" />
+
+	<!-- rviz -->
+	<node name="rviz" pkg="rviz" type="rviz" respawn="true" args="-d $(find copter_arm_robot)/config/copter.rviz" output="screen"/>
+
+</launch>

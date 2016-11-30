@@ -1,0 +1,179 @@
+<?xml version="1.0"?>
+<robot name="copter_arm" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+	<link name="anchor">
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.01 0.01 0.01"/>
+			</geometry>
+		</visual>
+
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.01 0.01 0.01"/>
+			</geometry>
+		</collision>
+
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<mass value="1000"/>
+			<inertia ixx="100" ixy="0.0" ixz="0.0" iyy="100" iyz="0.0" izz="100"/>
+		</inertial>
+	</link>
+	<gazebo reference="anchor">
+		<static>true</static>
+	</gazebo>
+
+	<joint name="free_joint" type="continuous">
+		<origin xyz="0 0 1.0" rpy="1.5708 0 0"/>
+		<parent link="anchor"/>
+		<child link="arm"/>
+		<axis xyz="1 0 0"/>
+		<limit effort="300" velocity="300" />
+		<dynamics damping="0.03" friction="0.05"/>
+	</joint>
+
+	<link name="arm">
+		<visual>
+			<origin xyz="0 0 0.25" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.02 0.02 0.5"/>
+			</geometry>
+		</visual>
+
+		<collision>
+			<origin xyz="0 0 0.25" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.02 0.02 0.5"/>
+			</geometry>
+		</collision>
+
+		<inertial>
+			<origin xyz="0 0 0.15" rpy="0 0 0"/>
+			<mass value="0.1"/>
+			<inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+		</inertial>
+	</link>
+
+	<joint name="motor_joint" type="continuous">
+		<origin xyz="0 0.01 0.5" rpy="0 0 0"/>
+		<parent link="arm"/>
+		<child link="helix"/>
+		<axis xyz="0 1 0"/>
+		<limit effort="500" velocity="1100"/>
+		<dynamics damping="0.01" friction="0.1"/>
+	</joint>
+
+	<link name="helix">
+		<visual>
+			<origin xyz="0 0 0.15" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.03 0.001 0.15"/>
+			</geometry>
+		</visual>
+
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.03 0.01 0.15"/>
+			</geometry>
+		</collision>
+
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<mass value="0.25"/>
+			<inertia ixx="0.005" ixy="0.0" ixz="0.0" iyy="0.005" iyz="0.0" izz="0.005"/>
+		</inertial>
+	</link>
+
+	<!-- we need to add a transmission with this joint so the gazebo ros control plugin can see it in gazebo -->
+	<transmission name="free_joint_trans">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="free_joint">
+			<hardwareInterface>EffortJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="bearings">
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+	<transmission name="motor_joint_trans">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="motor_joint">
+			<hardwareInterface>EffortJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="motor">
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+	<gazebo>
+		<!-- plugin to have a ros control interface -->
+		<plugin name="copter_arm_sim_plugin" filename="libgazebo_ros_control.so">
+			<robotNamespace>/copter_arm</robotNamespace>
+		</plugin>
+
+		<!-- plugin to simulate the lift force by the helix -->
+		<!-- 
+			link_name: Name of the link affected by the group of lift/drag properties.
+			air_density: Density of the fluid this model is suspended in.
+			area: Surface area of the link.
+			a0: The initial "alpha" or initial angle of attack. a0 is also the y-intercept of the alpha-lift coefficient curve.
+			cla: The ratio of the coefficient of lift and alpha slope before stall. Slope of the first portion of the alpha-lift coefficient curve.
+			cda: The ratio of the coefficient of drag and alpha slope before stall.
+			cp: Center of pressure. The forces due to lift and drag will be applied here.
+			forward: 3-vector representing the forward direction of motion in the link frame.
+			upward: 3-vector representing the direction of lift or drag.
+			alpha_stall: Angle of attack at stall point; the peak angle of attack.
+			cla_stall: The ratio of coefficient of lift and alpha slope after stall. Slope of the second portion of the alpha-lift coefficient curve.
+			cda_stall: The ratio of coefficient of drag and alpha slope after stall.
+		-->
+		<plugin name="copter_arm_propeller_top" filename="libLiftDragPlugin.so">
+			<a0>0.3</a0>
+			<cla>4.752798721</cla>
+			<cda>0.6417112299</cda>
+			<alpha_stall>1.3</alpha_stall>
+			<cla_stall>-3.85</cla_stall>
+			<cda_stall>-0.9233984055</cda_stall>
+			<cp>0 0 0.15</cp>
+			<area>0.05</area>
+			<air_density>1.2041</air_density>
+			<forward>-1 0 0</forward>
+			<upward>0 1 0</upward>
+			<link_name>helix</link_name>
+		</plugin>
+		<plugin name="copter_arm_propeller_bottom" filename="libLiftDragPlugin.so">
+			<a0>0.3</a0>
+			<cla>4.752798721</cla>
+			<cda>0.6417112299</cda>
+			<alpha_stall>1.3</alpha_stall>
+			<cla_stall>-3.85</cla_stall>
+			<cda_stall>-0.9233984055</cda_stall>
+			<cp>0.13 0 -0.075</cp>
+			<area>0.05</area>
+			<air_density>1.2041</air_density>
+			<forward>1 0 0</forward>
+			<upward>0 1 0</upward>
+			<link_name>helix</link_name>
+		</plugin>
+		<!-- plugin name="copter_arm_propeller_240" filename="libLiftDragPlugin.so">
+			<a0>0.3</a0>
+			<cla>4.752798721</cla>
+			<cda>0.6417112299</cda>
+			<alpha_stall>1.3</alpha_stall>
+			<cla_stall>-3.85</cla_stall>
+			<cda_stall>-0.9233984055</cda_stall>
+			<cp>-0.13 0 -0.075</cp>
+			<area>0.05</area>
+			<air_density>1.2041</air_density>
+			<forward>0.5 0.0 0.866</forward>
+			<upward>0 1 0</upward>
+			<link_name>helix</link_name>
+		</plugin -->
+
+
+	</gazebo>
+
+</robot>
