@@ -62,6 +62,6 @@
 	<node name="plots" pkg="rqt_gui" type="rqt_gui" respawn="true" args="--perspective-file $(find copter_arm_robot)/config/pid.perspective" output="screen" />
 
 	<!-- rviz -->
-	<node name="rviz" pkg="rviz" type="rviz" respawn="true" args="-d $(find copter_arm_robot)/config/copter.rviz" output="screen"/>
+	<!-- node name="rviz" pkg="rviz" type="rviz" respawn="true" args="-d $(find copter_arm_robot)/config/copter.rviz" output="screen"/ -->
 
 </launch>
