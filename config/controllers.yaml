@@ -3,12 +3,11 @@ copter_arm:
      type: joint_state_controller/JointStateController
      publish_rate: 50
 
-  motor_controller:
-     type: effort_controllers/JointVelocityController
-     joint: motor_joint
-     pid: {p: 10.0,  i: 0.0, d: 0.0, i_clamp: 5}
-
   free_controller:
      type: effort_controllers/JointEffortController
      joint: free_joint
 
+  motor_controller:
+     type: velocity_controllers/JointVelocityController
+     joint: motor_joint
+     # pid: {p: 10.0,  i: 0.0, d: 0.0, i_clamp: 5}

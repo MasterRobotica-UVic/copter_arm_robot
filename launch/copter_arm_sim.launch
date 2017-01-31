@@ -27,7 +27,7 @@
 
 	<!-- Load all available ros controllers -->
 	<rosparam file="$(find copter_arm_robot)/config/controllers.yaml" command="load"/>
-	<node ns="copter_arm" name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="state_controller motor_controller free_controller"/>
+	<node ns="copter_arm" name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="state_controller motor_controller" /> <!-- free_controller"/> -->
 
 	<!-- Load the simulation environment -->
 	<group if="$(arg robot_sim)">

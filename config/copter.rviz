@@ -81,31 +81,22 @@ Visualization Manager:
       Value: true
       Visual Enabled: true
     - Class: rviz/TF
-      Enabled: true
+      Enabled: false
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        anchor:
-          Value: true
-        arm:
-          Value: true
-        helix:
-          Value: true
       Marker Scale: 1
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: true
       Tree:
-        anchor:
-          arm:
-            helix:
-              {}
+        {}
       Update Interval: 0
-      Value: true
+      Value: false
   Enabled: true
   Global Options:
-    Background Color: 48; 48; 48
+    Background Color: 0; 85; 127
     Fixed Frame: anchor
     Frame Rate: 30
   Name: root
@@ -127,24 +118,24 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 1.42107511
+      Distance: 0.603310406
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.285818219
-        Y: -0.339272231
-        Z: 0.16949062
+        X: -0.148032486
+        Y: -0.0744799078
+        Z: 0.902113914
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.605203211
+      Pitch: 0.20520328
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.23342466
+      Yaw: 5.73841858
     Saved: ~
 Window Geometry:
   Displays:

@@ -1,0 +1,62 @@
+<?xml version="1.0" ?>
+<launch>
+
+	<arg name="isBoardConnected" default="true" doc="Specify whether the arduino board is connected or not."/>
+	<arg name="port" default="/dev/ttyACM0"/>
+	<arg name="baud" default="57600"/>
+
+	<arg name="name" default="copter_arm"/>
+
+	<!-- remap the command, if not at the beginning, it does not work -->
+	<remap from="/control_effort" to="/copter_arm/motor_controller/command" />
+
+	<!-- Load the URDF and basic ROS stuff -->
+	<param name="robot_description" command="$(find xacro)/xacro --inorder '$(find copter_arm_robot)/urdf/copter_arm.urdf'" />
+	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+		<param name="use_gui" value="false"/>
+		<rosparam param="source_list">[copter_arm/joint_states]</rosparam>
+	</node>
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+	<rosparam file="$(find copter_arm_robot)/config/pot_calibration.yaml" command="load"/>
+	<rosparam file="$(find copter_arm_robot)/config/controllers.yaml" command="load"/>
+	<node ns="copter_arm" name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="state_controller motor_controller"/>
+
+	<param name="name" value="$(arg name)"/>
+	<node ns="copter_arm" required="true" name="copter_arm" pkg="copter_arm_robot" type="fan_hwiface" respawn="false" output="screen"/>
+
+	<group if="$(arg isBoardConnected)">
+		<!-- rosparam command="load" file="$(find lookat_firmware)/config/arduino_params.yaml" / -->
+		<node ns="copter_arm" name="arduino_node" pkg="rosserial_python" type="serial_node.py" output="screen">
+			<param name="~port" value="$(arg port)" />
+	        <param name="~baud" value="$(arg baud)" />
+		</node>
+	</group>
+
+	<!-- Load the generic PID controller -->
+	<node name="copter_arm_angle_controller" pkg="pid" type="controller" >
+		<param name="Kp" value="1.0" />
+		<param name="Ki" value="0.033" />
+		<param name="Kd" value="0.1" />
+		<param name="upper_limit" value="9999999" />
+		<param name="lower_limit" value="-9999999" />
+		<param name="windup_limit" value="500" />
+		<param name="diagnostic_period" value="0.25" />
+		<param name="max_loop_frequency" value="100.0" />
+		<param name="min_loop_frequency" value="100.0" />
+	</node>
+
+	<!-- mouse teleop -->
+	<include file="$(find mouse_teleop)/launch/mouse_teleop.launch">
+		<arg name="holonomic" value="false"/>
+	</include>
+
+	<node name="setpoint_transformer" pkg="topic_tools" type="transform" args="/mouse_vel /setpoint std_msgs/Float64 'm.linear.x'" output="screen" respawn="true" />
+
+	<node name="state_transformer" pkg="topic_tools" type="transform" args="/copter_arm/joint_states /state std_msgs/Float64 'm.position[0]'" output="screen" respawn="true" />
+
+	<node name="plots" pkg="rqt_gui" type="rqt_gui" respawn="true" args="--perspective-file $(find copter_arm_robot)/config/pid.perspective" output="screen" />
+
+	<node name="rviz" pkg="rviz" type="rviz" respawn="true" args="-d $(find copter_arm_robot)/config/copter.rviz" output="screen"/>
+
+</launch>

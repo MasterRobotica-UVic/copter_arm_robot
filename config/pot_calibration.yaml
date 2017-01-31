@@ -1,0 +1,17 @@
+# This values were obtained by writing down 3 points in the curve
+#   rad    |   msr
+# ---------+--------
+#    0     |   492    
+# 1.5707   |   902
+# -1.5707  |   122
+#          |
+#
+# Then, fitting a 2nd order polynomial on wolfram alpha as:
+# https://www.wolframalpha.com/input/?i=fit+((492,0),(902,1.5707),(122,-1.5707))
+# 
+# This gives a linear correlation of:
+# 0.00402391*P - 2.03342
+#
+copter_arm:
+  gain: 0.00402391
+  bias: -2.03342
