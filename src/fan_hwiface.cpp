@@ -94,15 +94,15 @@ public:
 
 	void read(ros::Time time, ros::Duration period)
 	{
-			// update free joint
-			joint_position_prev_[0] = joint_position_[0];
-			joint_position_[0] = angle_; // read from potentiometer
-			joint_velocity_[0] = filters::exponentialSmoothing((joint_position_[0]-joint_position_prev_[0])/period.toSec(), joint_velocity_[0], 0.2);
-			
-			// update motor joint
-			joint_position_prev_[1] = joint_position_[1];
-			joint_position_[1] += joint_velocity_[1]*period.toSec();
-			joint_velocity_[1] = joint_velocity_command_.at(1);
+		// update free joint
+		joint_position_prev_[0] = joint_position_[0];
+		joint_position_[0] = angle_; // read from potentiometer
+		joint_velocity_[0] = filters::exponentialSmoothing((joint_position_[0]-joint_position_prev_[0])/period.toSec(), joint_velocity_[0], 0.2);
+
+		// update motor joint
+		joint_position_prev_[1] = joint_position_[1];
+		joint_position_[1] += joint_velocity_[1]*period.toSec();
+		joint_velocity_[1] = joint_velocity_command_.at(1);
 		return;
 	};
 
