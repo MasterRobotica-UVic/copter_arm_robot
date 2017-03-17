@@ -25,7 +25,7 @@ If you don't have the money or the skills to build it, don't worry, you can use 
 
 1. The package is built using the [Gazebo](http://gazebosim.org/)/[ROS](http://www.ros.org/) ecosystem, in particular, the ROS/Kinetic distro. Installation instruction can be found [here](http://wiki.ros.org/kinetic/Installation/Ubuntu).
 2. After the installation, you need to create a ROS workspace, following [these instructions](http://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment)
-3. In addition, this package requires the forked version of the `teleop_tools/mouse_teleop` tools. Thus, you need to clone the package using the following command in a terminal (after steps 1 and 2): `roscd && cd ../src/ && git clone https://github.com/MasterRobotica-UVic/teleop_tools.git`
+3. In addition, this package requires the forked version of the [`teleop_tools/mouse_teleop`](https://github.com/MasterRobotica-UVic/teleop_tools) package. Thus, you need to clone the package using the following command in a terminal (after steps 1 and 2): `roscd && cd ../src/ && git clone https://github.com/MasterRobotica-UVic/teleop_tools.git`
 4. Finally, get this package usingt he following command in a terminal: `roscd && cd ../src/ && git clone https://github.com/MasterRobotica-UVic/copter_arm_robot.git`
 5. You are good to build: `roscd && cd .. && catkin_make`
 
