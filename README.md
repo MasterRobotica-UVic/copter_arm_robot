@@ -42,7 +42,7 @@ Or use the simulated scenario:
 
 ## Description of the real scenario
 
-The arduino board doesn't do any computation, it is just a hardware interface between PC and motor driver. If take a peek in the code running as (firmware)[firmware/fan_arduino.cpp] is pretty simple, it only [subscribes to the motor command](firmware/fan_arduino.cpp#L29) and [publishes the measured angle](firmware/fan_arduino.cpp#L30). The former is [forwarded directly to the pin](firmware/fan_arduino.cpp#L18-L22) where the motor driver is connected to, and the latter comes directly from the [pin where the potentiometer](firmware/fan_arduino.cpp#L24-L27) is connected to.
+The arduino board doesn't do any computation, it is just a hardware interface between PC and motor driver. If you take a peek in the code running as [firmware](firmware/fan_arduino.cpp) is pretty simple, it only [subscribes to the motor command](firmware/fan_arduino.cpp#L29) and [publishes the measured angle](firmware/fan_arduino.cpp#L30). The former is [forwarded directly to the pin](firmware/fan_arduino.cpp#L18-L22) where the motor driver is connected to, and the latter comes directly from the [pin where the potentiometer](firmware/fan_arduino.cpp#L24-L27) is connected to.
 
 This part of the code is mainly composed of three functions. The [`init()`](src/fan_hwiface.cpp#L50-L93) function that takes care of initilize subscribers, publishers, and populate all (typical) memebers of a `hardware_interface::RobotHW` object. The [`read()`](src/fan_hwiface.cpp#L95-L107) that updates the measured values from the Arduino to the shared memory for the controller, and the [`write()`](src/fan_hwiface.cpp#L109-L124) that updates the commanded values from the controller shared memory for the Aruino.
 
