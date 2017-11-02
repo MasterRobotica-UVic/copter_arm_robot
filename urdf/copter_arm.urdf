@@ -95,7 +95,7 @@
 	<transmission name="free_joint_trans">
 		<type>transmission_interface/SimpleTransmission</type>
 		<joint name="free_joint">
-			<hardwareInterface>EffortJointInterface</hardwareInterface>
+			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
 		</joint>
 		<actuator name="bearings">
 			<mechanicalReduction>1</mechanicalReduction>
@@ -105,7 +105,7 @@
 	<transmission name="motor_joint_trans">
 		<type>transmission_interface/SimpleTransmission</type>
 		<joint name="motor_joint">
-			<hardwareInterface>VelocityJointInterface</hardwareInterface>
+			<hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
 		</joint>
 		<actuator name="motor">
 			<mechanicalReduction>1</mechanicalReduction>
@@ -119,7 +119,7 @@
 		</plugin>
 
 		<!-- plugin to simulate the lift force by the helix -->
-		<!-- 
+		<!--
 			link_name: Name of the link affected by the group of lift/drag properties.
 			air_density: Density of the fluid this model is suspended in.
 			area: Surface area of the link.
