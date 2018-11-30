@@ -3,21 +3,21 @@
 
 	<link name="anchor">
 		<visual>
-			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<origin xyz="0 0 1.0" rpy="0 0 0"/>
 			<geometry>
-				<box size="0.01 0.01 0.01"/>
+				<box size="0.005 0.001 0.01"/>
 			</geometry>
 		</visual>
 
 		<collision>
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry>
-				<box size="0.01 0.01 0.01"/>
+				<box size="0.005 0.001 0.01"/>
 			</geometry>
 		</collision>
 
 		<inertial>
-			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
 			<mass value="1000"/>
 			<inertia ixx="100" ixy="0.0" ixz="0.0" iyy="100" iyz="0.0" izz="100"/>
 		</inertial>
@@ -27,12 +27,12 @@
 	</gazebo>
 
 	<joint name="free_joint" type="continuous">
-		<origin xyz="0 0 1.0" rpy="1.5708 0 0"/>
+		<origin xyz="0 0 1.0" rpy="0 0 0"/>
 		<parent link="anchor"/>
 		<child link="arm"/>
 		<axis xyz="1 0 0"/>
 		<limit effort="300" velocity="300" />
-		<dynamics damping="0.03" friction="0.05"/>
+		<dynamics damping="0.01" friction="0.001"/>
 	</joint>
 
 	<link name="arm">
@@ -61,7 +61,7 @@
 	</link>
 
 	<joint name="motor_joint" type="continuous">
-		<origin xyz="0 0.0015 0.21" rpy="0 0 0"/>
+		<origin xyz="0 0.01 0.21" rpy="0 0 0"/>
 		<parent link="arm"/>
 		<child link="helix"/>
 		<axis xyz="0 1 0"/>
@@ -74,6 +74,13 @@
 			<origin xyz="0 0 0.0" rpy="0 0 0"/>
 			<geometry>
 				<box size="0.005 0.001 0.065"/>
+			</geometry>
+		</visual>
+
+		<visual>
+			<origin xyz="0 -0.004 0" rpy="1.5708 0 0"/>
+			<geometry>
+				<cylinder radius="0.005" length="0.01"/>
 			</geometry>
 		</visual>
 
@@ -175,8 +182,5 @@
 			<upward>0 1 0</upward>
 			<link_name>helix</link_name>
 		</plugin -->
-
-
 	</gazebo>
-
 </robot>
