@@ -2,7 +2,7 @@
 
 Project designed to learn PID control, relying on ros_control + gazebo for sim/real scenarios, heavily inspired by the example given in the [Introduction to Control System Design - A First Look](https://www.edx.org/course/introduction-control-system-design-first-mitx-6-302-0x) online course from MIT.
 
-ToDo: link to video
+[Here is a short video showing this package working](https://youtu.be/8DxLgZAUb9Y)
 
 ## Hardware
 
