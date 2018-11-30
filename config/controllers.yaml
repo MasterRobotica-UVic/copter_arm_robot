@@ -10,4 +10,3 @@ copter_arm:
   motor_controller:
      type: velocity_controllers/JointVelocityController
      joint: motor_joint
-     # pid: {p: 10.0,  i: 0.0, d: 0.0, i_clamp: 5}
