@@ -29,15 +29,15 @@
 		<!-- rosparam command="load" file="$(find lookat_firmware)/config/arduino_params.yaml" / -->
 		<node ns="copter_arm" name="arduino_node" pkg="rosserial_python" type="serial_node.py" output="screen">
 			<param name="~port" value="$(arg port)" />
-	        <param name="~baud" value="$(arg baud)" />
+			<param name="~baud" value="$(arg baud)" />
 		</node>
 	</group>
 
 	<!-- Load the generic PID controller -->
 	<node name="copter_arm_angle_controller" pkg="pid" type="controller" >
-		<param name="Kp" value="1.0" />
-		<param name="Ki" value="0.033" />
-		<param name="Kd" value="0.1" />
+		<param name="Kp" value="0.0" /> <!-- 1.0 -->
+		<param name="Ki" value="0.0" /> <!-- 0.033 -->
+		<param name="Kd" value="0.0" /> <!-- 0.1 -->
 		<param name="upper_limit" value="9999999" />
 		<param name="lower_limit" value="-9999999" />
 		<param name="windup_limit" value="500" />
@@ -58,5 +58,4 @@
 	<node name="plots" pkg="rqt_gui" type="rqt_gui" respawn="true" args="--perspective-file $(find copter_arm_robot)/config/pid.perspective" output="screen" />
 
 	<node name="rviz" pkg="rviz" type="rviz" respawn="true" args="-d $(find copter_arm_robot)/config/copter.rviz" output="screen"/>
-
 </launch>
