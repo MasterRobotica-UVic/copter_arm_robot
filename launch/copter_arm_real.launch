@@ -6,6 +6,7 @@
 	<arg name="baud" default="57600"/>
 
 	<arg name="name" default="copter_arm"/>
+	<arg name="useJoystick" default="true"/>
 
 	<!-- remap the command, if not at the beginning, it does not work -->
 	<remap from="/control_effort" to="/copter_arm/motor_controller/command" />
@@ -51,7 +52,12 @@
 		<arg name="holonomic" value="false"/>
 	</include>
 
-	<node name="setpoint_transformer" pkg="topic_tools" type="transform" args="/mouse_vel /setpoint std_msgs/Float64 'm.linear.x'" output="screen" respawn="true" />
+	<group if="$(arg useJoystick)">
+		<node name="setpoint_transformer" pkg="topic_tools" type="transform" args="/copter_arm/joystick_setpoint /setpoint std_msgs/Float64 'm'" output="screen" respawn="true" />
+	</group>
+	<group unless="$(arg useJoystick)">
+		<node name="setpoint_transformer" pkg="topic_tools" type="transform" args="/mouse_vel /setpoint std_msgs/Float64 'm.linear.x'" output="screen" respawn="true" />
+	</group>
 
 	<node name="state_transformer" pkg="topic_tools" type="transform" args="/copter_arm/joint_states /state std_msgs/Float64 'm.position[0]'" output="screen" respawn="true" />
 

@@ -5,6 +5,7 @@
 #endif
 
 #include <std_msgs/Int16.h>
+#include <std_msgs/Float64.h>
 #include <ros/time.h>
 #include <ros.h>
 
@@ -14,11 +15,10 @@ int cmdPin = 3;
 std_msgs::Int16 angle_;
 int directDrivePin = 0;
 int inputPin = 1;
+std_msgs::Float64 joystick_;
 
 // debug
 std_msgs::Int16 cmd_mapped_;
-
-ros::NodeHandle nh;
 
 void updateCommand(const std_msgs::Int16& cmd_msg)
 {
@@ -38,14 +38,30 @@ void updateCommand(const std_msgs::Int16& cmd_msg)
 	analogWrite(cmdPin, cmd);
 }
 
+ros::NodeHandle nh;
+ros::Subscriber<std_msgs::Int16> sub_command_("arduino_cmd", &updateCommand);
+ros::Publisher pub_angle_("potentiometer_msr", &angle_);
+ros::Publisher pub_cmd_mapped_("arduino_cmd_mapped", &cmd_mapped_);
+ros::Publisher pub_joystick_setpoint_("joystick_setpoint", &joystick_);
+
 void updateAngle()
 {
 	angle_.data = analogRead(msrPin);
 }
 
-ros::Subscriber<std_msgs::Int16> sub_command_("arduino_cmd", &updateCommand);
-ros::Publisher pub_angle_("potentiometer_msr", &angle_);
-ros::Publisher pub_cmd_mapped_("arduino_cmd_mapped", &cmd_mapped_);
+void updateJoystick()
+{
+	// from -90 to 90 degress, but in radians
+	joystick_.data = map(analogRead(inputPin), 0, 1024, -512, 512)*1.57/512.0;
+
+}
+
+void publish()
+{
+	pub_angle_.publish(&angle_);
+	pub_cmd_mapped_.publish(&cmd_mapped_);
+	pub_joystick_setpoint_.publish(&joystick_);
+}
 
 void setup()
 {
@@ -53,6 +69,7 @@ void setup()
 	nh.subscribe(sub_command_);
 	nh.advertise(pub_angle_);
 	nh.advertise(pub_cmd_mapped_);
+	nh.advertise(pub_joystick_setpoint_);
 
 	// try one more time after 2 seconds
 	while(!nh.connected())
@@ -88,8 +105,8 @@ void loop()
 	if( nh.connected() )
 	{
 		updateAngle();
-		pub_angle_.publish(&angle_);
-		pub_cmd_mapped_.publish(&cmd_mapped_);
+		updateJoystick();
+		publish();
 		nh.spinOnce();
 	}
 	else
