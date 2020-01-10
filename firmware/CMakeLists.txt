@@ -12,7 +12,7 @@ print_programmer_list()
 # Something is wrong that it requires the time.cpp for time conversions
 generate_arduino_firmware(fan_arduino
   SRCS fan_arduino.cpp ${ROS_LIB_DIR}/time.cpp
-  BOARD mega2560
+  BOARD uno
   PORT /dev/ttyACM0
-  PROGRAMMER avrispmkii
+  PROGRAMMER usbtinyisp
 )
