@@ -27,12 +27,12 @@
 	</gazebo>
 
 	<joint name="free_joint" type="continuous">
-		<origin xyz="0 0 1.0" rpy="0 0 0"/>
+		<origin xyz="0 0 1.0" rpy="${0.5*pi} 0 0"/>
 		<parent link="anchor"/>
 		<child link="arm"/>
 		<axis xyz="1 0 0"/>
 		<limit effort="300" velocity="300" />
-		<dynamics damping="0.005" friction="0.005"/>
+		<dynamics damping="0.01" friction="0.005"/>
 	</joint>
 
 	<link name="arm">
@@ -93,7 +93,7 @@
 
 		<inertial>
 			<origin xyz="0 0 0" rpy="0 0 0"/>
-			<mass value="0.1"/>
+			<mass value="0.01"/>
 			<inertia ixx="0.005" ixy="0.0" ixz="0.0" iyy="0.005" iyz="0.0" izz="0.005"/>
 		</inertial>
 	</link>
