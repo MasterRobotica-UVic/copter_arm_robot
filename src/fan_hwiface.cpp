@@ -8,7 +8,7 @@
 // ROS headers
 #include <ros/ros.h>
 #include <std_msgs/Duration.h>
-#include <std_msgs/Int16.h>
+#include <std_msgs/UInt16.h>
 #include <std_msgs/Bool.h>
 #include <urdf/model.h>
 
@@ -38,7 +38,7 @@ public:
 	~COPTERHW()
 	{
 		// to set PWM to zero
-		pub_commands_->msg_.data = static_cast<int16_t>(0);
+		pub_commands_->msg_.data = static_cast<uint16_t>(0);
 		pub_commands_->unlockAndPublish();
 	}
 
@@ -47,7 +47,7 @@ public:
 	std::string urdf_string_;
 	urdf::Model urdf_model_;
 
-	realtime_tools::RealtimePublisher<std_msgs::Int16> *pub_commands_;
+	realtime_tools::RealtimePublisher<std_msgs::UInt16> *pub_commands_;
 	ros::Subscriber sub_measures_;
 
 
@@ -55,7 +55,7 @@ public:
 	{
 		n_joints_ = 2;
 
-		pub_commands_ = new realtime_tools::RealtimePublisher<std_msgs::Int16>(nh, "arduino_cmd", 1);
+		pub_commands_ = new realtime_tools::RealtimePublisher<std_msgs::UInt16>(nh, "arduino_cmd", 1);
 		sub_measures_ = nh.subscribe("potentiometer_msr", 1000, &COPTERHW::updateMsr, this) ;
 
 		nh.getParam("gain", gain_);
@@ -100,7 +100,7 @@ public:
 	{
 		// update free joint
 		joint_position_prev_[0] = joint_position_[0];
-		joint_position_[0] = angle_; // read from potentiometer
+		joint_position_[0] = filters::exponentialSmoothing(angle_, joint_position_[0], 0.2); // read from potentiometer
 		joint_velocity_[0] = filters::exponentialSmoothing((joint_position_[0]-joint_position_prev_[0])/period.toSec(), joint_velocity_[0], 0.2);
 
 		// update motor joint
@@ -116,11 +116,11 @@ public:
 		{
 			// only actuate in the correct direction
 			double fan_speed = ( ( joint_velocity_command_.at(1) ) );
-			pub_commands_->msg_.data = static_cast<int16_t>(fan_speed);
-			if( pub_commands_->msg_.data > 32767 )
-				pub_commands_->msg_.data = 32767;
-			else if( pub_commands_->msg_.data < -32767 )
-				pub_commands_->msg_.data = -32767;
+			pub_commands_->msg_.data = static_cast<uint16_t>(fan_speed);
+			if( pub_commands_->msg_.data > 65535 )
+				pub_commands_->msg_.data = 65535;
+			else if( pub_commands_->msg_.data < 0 )
+				pub_commands_->msg_.data = 0;
 			pub_commands_->unlockAndPublish();
 		}
 		return;
@@ -171,7 +171,7 @@ public:
 
 private:
 
-	void updateMsr(const std_msgs::Int16::ConstPtr& msg)
+	void updateMsr(const std_msgs::UInt16::ConstPtr& msg)
 	{
 		angle_ = gain_* msg->data + bias_;
 	}
